@@ -11,19 +11,16 @@ usage()
 find_repo_top()
 {
     cwd=$1
-    #echo "starting from" $cwd;
     while [ "$cwd" != "" -a "$cwd" != "~" ]; do
-       #echo "in dir " $cwd;
        if [ -f $cwd/.repo/repo/main.py ]; then 
            repo_top=$cwd
-           #export repo_top=$cwd
            return
        fi
        cwd=${cwd%\/*}
    done
 }
 
-if [ $"repo_top"=="" ]; then
+if [ "$repo_top"=="" ]; then
   #echo "repo_top is empty, need to call find_repo_top"
   find_repo_top `pwd`
 fi
@@ -40,7 +37,7 @@ proj=`pwd | awk -F"$repo_name"/ '{print $2}'`
 
 echo "populating git info in $proj..."
 
-# step 1: print git logs in with "--pretty" format option, so that it's ready as sql sentences.
+# step 1: print git history logs in with "--pretty" format option, so that it's ready as sql sentences.
 git log --pretty=format:"insert into googler_info (h, ae, ce, at, proj) values ('%h', '%ae', '%ce', '%at', '$proj');" --author=@google.com > googler_info.txt
 
 # step 2: group all insert operations into one commit.
